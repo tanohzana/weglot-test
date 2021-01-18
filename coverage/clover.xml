@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1611006876343" clover="3.2.0">
-  <project timestamp="1611006876343" name="All files">
+<coverage generated="1611011326935" clover="3.2.0">
+  <project timestamp="1611011326935" name="All files">
     <metrics statements="51" coveredstatements="48" conditionals="33" coveredconditionals="30" methods="7" coveredmethods="7" elements="91" coveredelements="85" complexity="0" loc="51" ncloc="51" packages="1" files="4" classes="4"/>
     <file name="arrangeDays.js" path="/Users/florianadonis/Desktop/weglot-js-assessment-master/src/utils/arrangeDays.js">
       <metrics statements="19" coveredstatements="19" conditionals="14" coveredconditionals="14" methods="3" coveredmethods="3"/>
@@ -15,9 +15,9 @@
       <line num="15" count="1000" type="stmt"/>
       <line num="17" count="1000" type="stmt"/>
       <line num="18" count="10777" type="cond" truecount="2" falsecount="0"/>
-      <line num="20" count="2502" type="cond" truecount="4" falsecount="0"/>
+      <line num="20" count="2501" type="cond" truecount="4" falsecount="0"/>
       <line num="21" count="872" type="stmt"/>
-      <line num="24" count="2502" type="cond" truecount="4" falsecount="0"/>
+      <line num="24" count="2501" type="cond" truecount="4" falsecount="0"/>
       <line num="25" count="57" type="stmt"/>
       <line num="26" count="57" type="stmt"/>
       <line num="30" count="1000" type="cond" truecount="2" falsecount="0"/>
