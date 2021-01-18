@@ -101,7 +101,7 @@ Si vous pensez que des modifications sont utiles
 - Ces bouts de codes fictifs n'ont rien à voir les uns avec les autres
 - Ne vous attardez pas sur des détails, comme le naming, qui ne nous intéressent pas ici
 
-1. 
+1.
 
 ```js
 const data = [
@@ -110,38 +110,58 @@ const data = [
   { value: "3", label: "Three" },
 ];
 
+// Tu peux utiliser un map, sachant que tes traitements sont assez simples 🙂
+
+// Comme je le vois :
+// const values = data.map(entry => entry.value);
+
 const values = data.reduce((values, { value }) => {
   values.push(value);
   return values;
 }, []);
 ```
 
-2. 
+2.
 
 ```js
 async function getIndexes() {
+   // L'écriture n'est pas très claires. On peut peut-être découper un peu plus
+   // Et pour si peu de code, pas besoin de créer une fonction en plus
    return await fetch('https://api.coingecko.com/api/v3/indexes').then(res => res.json());
 }
 
 async function analyzeIndexes() {
+   // Ici, le catch est séparé du then; ça rend la lisibilité plus compliquée
    const indexes = await getIndexes().catch(_ => {
       throw new Error('Unable to fetch indexes');
    });
    return indexes;
+
+   // Comment je le vois
+
+   // try {
+   //    const res = await fetch('https://api.coingecko.com/api/v3/indexes');
+   //    return res.json();
+   // } catch(_) {
+   //    throw new Error('Unable to fetch indexes');
+   // }
 }
 ```
 
-3. 
+3.
 
 ```js
 let state;
 const user = getUser();
 if (user) {
+   // Pas nécessaire de stocker dans une variable
    const project = getProject(user.id);
+   // Pas besoin de stocker dans state
    state = {
       user,
       project
    };
+// On peut enlever le else et initialiser state avec null null
 } else {
    state = {
       user: null,
@@ -149,42 +169,77 @@ if (user) {
    };
 }
 ctx.body = state;
+
+// Comment je le vois :
+
+// const user = getUser();
+// ctx.body = { user: null, project: null };
+
+// if (user) {
+//    ctx.body = {
+//       user,
+//       project: getProject(user.id);
+//    };
+// }
 ```
 
-4. 
+4.
 
 ```js
 function getQueryProvider() {
   const url = window.location.href;
   const [_, provider] = url.match(/provider=([^&]*)/);
+
+  // Pas besoin de tester s'il existe
   if (provider) {
      return provider;
   }
   return;
 }
+
+// Comment je le vois :
+
+// function getQueryProvider() {
+//   const url = window.location.href;
+//   const [_, provider] = url.match(/provider=([^&]*)/);
+
+//   return provider;
+// }
+
 ```
 
-5. 
+5.
 
 ```js
 function getParagraphTexts() {
    const texts = [];
+   // Pas besoin de faire un forEach si tu utilises tous les éléments, autant tous les retourner directement
    document.querySelectorAll("p").forEach(p => {
       texts.push(p);
    });
    return texts;
 }
+
+// Comment je le vois :
+
+// function getParagraphTexts() {
+//    return document.querySelectorAll("p");
+// }
+
 ```
 
-6. 
+6.
 
 ```js
 function Employee({ id }) {
    const [error, setError] = useState(null);
+   // Je ferais varier le loading au moment où on va chercher la data
    const [loading, setLoading] = useState(true);
    const [employee, setEmployee] = useState({});
 
    useEffect(() => {
+      // On pourrait mettre un finally pour "factoriser" le setLoading false
+      // On pourrait aussi utiliser un async/await pour aider la lisibilité
       getEmployee(id)
          .then(employee => {
             setEmployee(employee);
@@ -196,6 +251,7 @@ function Employee({ id }) {
          });
    }, [id]);
 
+   // On pourrait rassembler tout dans une seul return avec des && et des ||
    if (error) {
       return <Error />;
    }
@@ -218,18 +274,61 @@ function Employee({ id }) {
       </Table>
    );
 }
+
+// Comment je le vois :
+
+// function Employee({ id }) {
+//    const [error, setError] = useState(null);
+//    const [loading, setLoading] = useState(false);
+//    const [employee, setEmployee] = useState({});
+
+//    useEffect(() => {
+//       const asyncFunc = async () => {
+//          setLoading(true);
+
+//          try {
+//             const employee = await getEmployee(id);
+//             setEmployee(employee);
+//          } catch(_) {
+//             setError('Unable to fetch employee');
+//          } finally {
+//             setLoading(false);
+//          }
+//       }
+
+//       asyncFunc();
+//    }, [id]);
+
+//    return error && <Error /> ||
+//       loading && <Loading /> ||
+//       (
+//          <Table>
+//             <Row>
+//                <Cell>{employee.firstName}</Cell>
+//                <Cell>{employee.lastName}</Cell>
+//                <Cell>{employee.position}</Cell>
+//                <Cell>{employee.project}</Cell>
+//                <Cell>{employee.salary}</Cell>
+//                <Cell>{employee.yearHired}</Cell>
+//                <Cell>{employee.wololo}</Cell>
+//             </Row>
+//          </Table>
+//       );
+// }
 ```
 
-7. 
+7.
 
 ```js
 async function getFilledIndexes() {
    try {
       const filledIndexes = [];
+      // On pourrait utiliser Promise.all pour faire tourner les requêtes en même temps
       const indexes = await getIndexes();
       const status = await getStatus();
       const usersId = await getUsersId();
-      
+
+      // On pourrait utiliser un Array.filter pour simplifier l'écriture
       for (let index of indexes) {
          if (index.status === status.filled && usersId.includes(index.userId)) {
             filledIndexes.push(index);
@@ -240,12 +339,29 @@ async function getFilledIndexes() {
       throw new Error ('Unable to get indexes');
    }
 }
+
+// Comment je le vois :
+
+// async function getFilledIndexes() {
+//    try {
+//       const filledIndexes = [];
+//       const [indexes, status, usersId] = await Promise.all(getIndexes(), getStatus(), getUsersId());
+
+//       const filledIndexes = indexes.filter(index => index.status === status.filled && usersId.includes(index.userId))
+
+//       return filledIndexes;
+//    } catch(_) {
+//       throw new Error ('Unable to get indexes');
+//    }
+// }
+
 ```
 
-8. 
+8.
 
 ```js
 function getUserSettings(user) {
+   // Plutôt que tester tous les cas, on peut mettre un try-catch et retourner settings ou {} à la fin du try et {} en cas d'erreur
    if (user) {
       const project = getProject(user.id);
       if (project) {
@@ -257,4 +373,17 @@ function getUserSettings(user) {
    }
    return {};
 }
+
+// Comment je le vois :
+
+// function getUserSettings(user) {
+//    try {
+//       const project = getProject(user.id);
+//       const settings = getSettings(project.id);
+
+//       return settings || {};
+//    } catch (_) {
+//       return {};
+//    }
+// }
 ```
