@@ -111,14 +111,22 @@ const data = [
 ];
 
 // Tu peux utiliser un map, sachant que tes traitements sont assez simples 🙂
-
-// Comme je le vois :
-// const values = data.map(entry => entry.value);
-
 const values = data.reduce((values, { value }) => {
   values.push(value);
   return values;
 }, []);
+```
+
+Comment je le vois :
+
+```js
+const data = [
+  { value: "1", label: "One" },
+  { value: "2", label: "Two" },
+  { value: "3", label: "Three" },
+];
+
+const values = data.map(entry => entry.value);
 ```
 
 2.
@@ -136,16 +144,18 @@ async function analyzeIndexes() {
       throw new Error('Unable to fetch indexes');
    });
    return indexes;
-
-   // Comment je le vois
-
-   // try {
-   //    const res = await fetch('https://api.coingecko.com/api/v3/indexes');
-   //    return res.json();
-   // } catch(_) {
-   //    throw new Error('Unable to fetch indexes');
-   // }
 }
+```
+
+Comment je le vois
+
+```js
+   try {
+      const res = await fetch('https://api.coingecko.com/api/v3/indexes');
+      return res.json();
+   } catch(_) {
+      throw new Error('Unable to fetch indexes');
+   }
 ```
 
 3.
@@ -156,12 +166,12 @@ const user = getUser();
 if (user) {
    // Pas nécessaire de stocker dans une variable
    const project = getProject(user.id);
-   // Pas besoin de stocker dans state
+   // Pas besoin de stocker dans state, utilises ctx.body pour gagner de la mémoire
    state = {
       user,
       project
    };
-// On peut enlever le else et initialiser state avec null null
+// On peut enlever le else et initialiser ctx.body avec null null au début
 } else {
    state = {
       user: null,
@@ -169,18 +179,20 @@ if (user) {
    };
 }
 ctx.body = state;
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// const user = getUser();
-// ctx.body = { user: null, project: null };
+```js
+   const user = getUser();
+   ctx.body = { user: null, project: null };
 
-// if (user) {
-//    ctx.body = {
-//       user,
-//       project: getProject(user.id);
-//    };
-// }
+   if (user) {
+      ctx.body = {
+         user,
+         project: getProject(user.id);
+      };
+   }
 ```
 
 4.
@@ -190,22 +202,23 @@ function getQueryProvider() {
   const url = window.location.href;
   const [_, provider] = url.match(/provider=([^&]*)/);
 
-  // Pas besoin de tester s'il existe
+  // Pas besoin de tester s'il existe, retournes-le directement
   if (provider) {
      return provider;
   }
   return;
 }
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// function getQueryProvider() {
-//   const url = window.location.href;
-//   const [_, provider] = url.match(/provider=([^&]*)/);
+```js
+   function getQueryProvider() {
+   const url = window.location.href;
+   const [_, provider] = url.match(/provider=([^&]*)/);
 
-//   return provider;
-// }
-
+   return provider;
+   }
 ```
 
 5.
@@ -219,13 +232,14 @@ function getParagraphTexts() {
    });
    return texts;
 }
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// function getParagraphTexts() {
-//    return document.querySelectorAll("p");
-// }
-
+```js
+   function getParagraphTexts() {
+      return document.querySelectorAll("p");
+   }
 ```
 
 6.
@@ -274,47 +288,49 @@ function Employee({ id }) {
       </Table>
    );
 }
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// function Employee({ id }) {
-//    const [error, setError] = useState(null);
-//    const [loading, setLoading] = useState(false);
-//    const [employee, setEmployee] = useState({});
+```js
+function Employee({ id }) {
+   const [error, setError] = useState(null);
+   const [loading, setLoading] = useState(false);
+   const [employee, setEmployee] = useState({});
 
-//    useEffect(() => {
-//       const asyncFunc = async () => {
-//          setLoading(true);
+   useEffect(() => {
+      const asyncFunc = async () => {
+         setLoading(true);
 
-//          try {
-//             const employee = await getEmployee(id);
-//             setEmployee(employee);
-//          } catch(_) {
-//             setError('Unable to fetch employee');
-//          } finally {
-//             setLoading(false);
-//          }
-//       }
+         try {
+            const employee = await getEmployee(id);
+            setEmployee(employee);
+         } catch(_) {
+            setError('Unable to fetch employee');
+         } finally {
+            setLoading(false);
+         }
+      }
 
-//       asyncFunc();
-//    }, [id]);
+      asyncFunc();
+   }, [id]);
 
-//    return error && <Error /> ||
-//       loading && <Loading /> ||
-//       (
-//          <Table>
-//             <Row>
-//                <Cell>{employee.firstName}</Cell>
-//                <Cell>{employee.lastName}</Cell>
-//                <Cell>{employee.position}</Cell>
-//                <Cell>{employee.project}</Cell>
-//                <Cell>{employee.salary}</Cell>
-//                <Cell>{employee.yearHired}</Cell>
-//                <Cell>{employee.wololo}</Cell>
-//             </Row>
-//          </Table>
-//       );
-// }
+   return error && <Error /> ||
+      loading && <Loading /> ||
+      (
+         <Table>
+            <Row>
+               <Cell>{employee.firstName}</Cell>
+               <Cell>{employee.lastName}</Cell>
+               <Cell>{employee.position}</Cell>
+               <Cell>{employee.project}</Cell>
+               <Cell>{employee.salary}</Cell>
+               <Cell>{employee.yearHired}</Cell>
+               <Cell>{employee.wololo}</Cell>
+            </Row>
+         </Table>
+      );
+}
 ```
 
 7.
@@ -339,22 +355,23 @@ async function getFilledIndexes() {
       throw new Error ('Unable to get indexes');
    }
 }
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// async function getFilledIndexes() {
-//    try {
-//       const filledIndexes = [];
-//       const [indexes, status, usersId] = await Promise.all(getIndexes(), getStatus(), getUsersId());
+```js
+async function getFilledIndexes() {
+   try {
+      const filledIndexes = [];
+      const [indexes, status, usersId] = await Promise.all(getIndexes(), getStatus(), getUsersId());
 
-//       const filledIndexes = indexes.filter(index => index.status === status.filled && usersId.includes(index.userId))
+      const filledIndexes = indexes.filter(index => index.status === status.filled && usersId.includes(index.userId))
 
-//       return filledIndexes;
-//    } catch(_) {
-//       throw new Error ('Unable to get indexes');
-//    }
-// }
-
+      return filledIndexes;
+   } catch(_) {
+      throw new Error ('Unable to get indexes');
+   }
+}
 ```
 
 8.
@@ -373,17 +390,19 @@ function getUserSettings(user) {
    }
    return {};
 }
+```
 
-// Comment je le vois :
+Comment je le vois :
 
-// function getUserSettings(user) {
-//    try {
-//       const project = getProject(user.id);
-//       const settings = getSettings(project.id);
+```js
+function getUserSettings(user) {
+   try {
+      const project = getProject(user.id);
+      const settings = getSettings(project.id);
 
-//       return settings || {};
-//    } catch (_) {
-//       return {};
-//    }
-// }
+      return settings || {};
+   } catch (_) {
+      return {};
+   }
+}
 ```
